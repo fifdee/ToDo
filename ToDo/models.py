@@ -9,6 +9,9 @@ class ToDo(models.Model):
     modified = models.DateTimeField(auto_now=True)
     completed = models.BooleanField(default=False)
 
+    def __str__(self):
+        return self.description
+
 
 class UserProfile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)

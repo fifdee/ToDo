@@ -1,10 +1,10 @@
 {% load static %}
 
-<div class="" style="background-color: lightgray">
+<div class="">
     <div class="d-flex justify-content-center">
         <nav class="navbar navbar-expand-sm">
             <div class="container-fluid">
-                <a class="navbar-brand" href="#">
+                <a class="navbar-brand" href="{% url 'todo-list' %}">
                     <img src="{% static 'icons/todo.svg' %}" height="32px"/>
                 </a>
                 <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
@@ -15,11 +15,20 @@
                 <div class="collapse navbar-collapse" id="navbarSupportedContent">
                     <ul class="navbar-nav me-auto">
                         <li class="nav-item">
-                            <a class="nav-link" aria-current="page" href="#">List</a>
+                            <a class="nav-link" aria-current="page" href="{% url 'todo-list' %}">List</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="#">Add new</a>
+                            <a class="nav-link" href="{% url 'todo-create' %}">Add new</a>
                         </li>
+                        {% if request.user.is_authenticated %}
+                            <li class="nav-item">
+                                <a class="nav-link" href="{% url 'account_logout' %}">Logout</a>
+                            </li>
+                        {% else %}
+                            <li class="nav-item">
+                                <a class="nav-link" href="">Login</a>
+                            </li>
+                        {% endif %}
                     </ul>
                 </div>
             </div>

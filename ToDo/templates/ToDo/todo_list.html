@@ -1,5 +1,21 @@
-{% extends 'base.html' %}
+{% extends 'account/base.html' %}
 
 {% block content %}
-    Here comes the list
+    <ol class="list-group list-group-numbered mt-4">
+        {% for todo in object_list %}
+            <li class="list-group-item d-flex justify-content-between align-items-start">
+                <div class="ms-2 me-auto">
+                    <a class="text-black text-decoration-none" href="{% url 'todo-update' todo.pk %}">
+                    <div class="fw-bold">{{ todo|linebreaks }}</div>
+                        <small>{{ todo.modified|timesince }}</small>
+                    </a>
+                </div>
+                <a href="{% url 'todo-complete' todo.pk %}"><span class="badge bg-primary rounded-pill">&#10003;</span></a>
+            </li>
+        {% empty %}
+            Your tasks list is empty. Add something to do.
+        {% endfor %}
+    </ol>
 {% endblock %}
+
+
