@@ -11,24 +11,30 @@ https://docs.djangoproject.com/en/4.1/ref/settings/
 """
 
 from pathlib import Path
-from os import environ
+import environ
+import os
 
+env = environ.Env(
+    # set casting, default value
+    DEBUG=(bool, False)
+)
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/4.1/howto/deployment/checklist/
 
+environ.Env.read_env(os.path.join(BASE_DIR, '.env'))
+
+DEBUG = env('DEBUG')
+
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = environ.get('SECRET_KEY', default='your secret key')
+SECRET_KEY = env('SECRET_KEY')
 
 ALLOWED_HOSTS = []
 
-if environ.get('PRODUCTION'):
-    DEBUG = False
-    ALLOWED_HOSTS.append(environ.get('DOMAIN_NAME'))
-else:
-    DEBUG = True
+if not DEBUG:
+    ALLOWED_HOSTS.append(env('DOMAIN_NAME'))
 
 
 # Application definition
@@ -50,8 +56,6 @@ INSTALLED_APPS = [
 
     'ToDo.apps.TodoConfig',
 ]
-
-SITE_ID = 1
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -98,10 +102,21 @@ WSGI_APPLICATION = 'ToDoProject.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/4.1/ref/settings/#databases
 
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.sqlite3',
+#         'NAME': BASE_DIR / 'db.sqlite3',
+#     }
+# }
+
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': 'railway',
+        'USER': 'postgres',
+        'PASSWORD': env('PGPASSWORD'),
+        'HOST': 'containers-us-west-125.railway.app',
+        'PORT': '7411',
     }
 }
 
@@ -137,11 +152,16 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.1/howto/static-files/
 
+SITE_ID = 1
+SITE_ROOT = os.path.realpath(os.path.dirname(__file__))
+
 STATIC_URL = 'static/'
 STATIC_ROOT = BASE_DIR / 'staticfiles/'
 STATICFILES_DIRS = [
     BASE_DIR / 'static'
 ]
+
+AUTH_USER_MODEL = 'ToDo.User'
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.1/ref/settings/#default-auto-field
@@ -157,12 +177,13 @@ ACCOUNT_USER_MODEL_USERNAME_FIELD = None
 ACCOUNT_EMAIL_REQUIRED = True
 ACCOUNT_USERNAME_REQUIRED = False
 ACCOUNT_AUTHENTICATION_METHOD = 'email'
+ACCOUNT_EMAIL_SUBJECT_PREFIX = 'ToDo'
 
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = 'smtp-mail.outlook.com'
 EMAIL_PORT = 587
 EMAIL_HOST_USER = 'no-reply-delivery@outlook.com'
 DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
-EMAIL_HOST_PASSWORD = environ.get('EMAIL_PASSWORD_OUTLOOK')
+EMAIL_HOST_PASSWORD = env('EMAIL_PASSWORD_OUTLOOK')
 EMAIL_USE_TLS = True
 EMAIL_USE_SSL = False

@@ -1,6 +1,10 @@
-from django.contrib.auth.models import User
+from django.contrib.auth.models import AbstractUser
 from django.db import models
-from django.db.models.signals import post_save
+from django.db.models.signals import post_save, pre_save
+
+
+class User(AbstractUser):
+    pass
 
 
 class ToDo(models.Model):
@@ -23,3 +27,16 @@ def user_created(sender, instance, created, **kwargs):
 
 
 post_save.connect(user_created, sender=User)
+
+
+def set_username(sender, instance, **kwargs):
+    email = instance.email
+    username = email[:30]
+    n = 1
+    while User.objects.exclude(pk=instance.pk).filter(username=username).exists():
+        n += 1
+        username = email[:(29 - len(str(n)))] + '-' + str(n)
+    instance.username = username
+
+
+pre_save.connect(set_username, sender=User)

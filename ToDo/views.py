@@ -51,7 +51,8 @@ class ToDoUpdate(LoginRequiredMixin, generic.UpdateView):
 
 
 class ToDoComplete(LoginRequiredMixin, generic.View):
-    def get(self, request, pk):
+    def post(self, request, *args, **kwargs):
+        pk = kwargs['pk']
         todo = get_object_or_404(ToDo.objects.filter(user=request.user), pk=pk)
         todo.completed = True
         todo.save()
@@ -60,7 +61,8 @@ class ToDoComplete(LoginRequiredMixin, generic.View):
 
 
 class ToDoDelete(LoginRequiredMixin, generic.View):
-    def get(self, request, pk):
+    def post(self, request, *args, **kwargs):
+        pk = kwargs['pk']
         todo = get_object_or_404(ToDo.objects.filter(user=request.user), pk=pk)
         todo.delete()
 
