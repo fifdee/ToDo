@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/4.1/ref/settings/
 """
 
 from pathlib import Path
+from os import environ
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -19,12 +20,16 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/4.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-sbwe+4x95#q17!kp28xq#owmentp2c$d3nmn@t_+q4r3hn9)i='
-
-# SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+SECRET_KEY = environ.get('SECRET_KEY', default='your secret key')
 
 ALLOWED_HOSTS = []
+
+if environ.get('PRODUCTION'):
+    DEBUG = False
+    ALLOWED_HOSTS.append(environ.get('DOMAIN_NAME'))
+else:
+    DEBUG = True
+
 
 # Application definition
 
@@ -153,4 +158,11 @@ ACCOUNT_EMAIL_REQUIRED = True
 ACCOUNT_USERNAME_REQUIRED = False
 ACCOUNT_AUTHENTICATION_METHOD = 'email'
 
-EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp-mail.outlook.com'
+EMAIL_PORT = 587
+EMAIL_HOST_USER = 'no-reply-delivery@outlook.com'
+DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
+EMAIL_HOST_PASSWORD = environ.get('EMAIL_PASSWORD_OUTLOOK')
+EMAIL_USE_TLS = True
+EMAIL_USE_SSL = False

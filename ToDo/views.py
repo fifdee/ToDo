@@ -12,7 +12,20 @@ class ToDoList(LoginRequiredMixin, generic.ListView):
     model = ToDo
 
     def get_queryset(self):
-        return ToDo.objects.filter(user=self.request.user).order_by('-modified')
+        return ToDo.objects.filter(user=self.request.user, completed=False).order_by('-modified')
+
+
+class ToDoListCompleted(LoginRequiredMixin, generic.ListView):
+    template_name = 'ToDo/todo_list.html'
+    model = ToDo
+
+    def get_queryset(self):
+        return ToDo.objects.filter(user=self.request.user, completed=True).order_by('-modified')
+
+    def get_context_data(self, *args, **kwargs):
+        context = super(ToDoListCompleted, self).get_context_data(*args, **kwargs)
+        context['completed'] = True
+        return context
 
 
 class ToDoCreate(LoginRequiredMixin, generic.CreateView):
@@ -39,8 +52,16 @@ class ToDoUpdate(LoginRequiredMixin, generic.UpdateView):
 
 class ToDoComplete(LoginRequiredMixin, generic.View):
     def get(self, request, pk):
-        print(f'pk is: {pk}')
         todo = get_object_or_404(ToDo.objects.filter(user=request.user), pk=pk)
-        print(todo)
+        todo.completed = True
+        todo.save()
 
         return redirect('todo-list')
+
+
+class ToDoDelete(LoginRequiredMixin, generic.View):
+    def get(self, request, pk):
+        todo = get_object_or_404(ToDo.objects.filter(user=request.user), pk=pk)
+        todo.delete()
+
+        return redirect('todo-list-completed')
