@@ -36,6 +36,13 @@ ALLOWED_HOSTS = []
 if not DEBUG:
     ALLOWED_HOSTS.append(env('DOMAIN_NAME'))
 
+CSRF_TRUSTED_ORIGINS = []
+
+if not DEBUG:
+    TRUSTED_ORIGIN = env('TRUSTED_ORIGIN')
+    if TRUSTED_ORIGIN:
+        CSRF_TRUSTED_ORIGINS.append(TRUSTED_ORIGIN)
+
 
 # Application definition
 
