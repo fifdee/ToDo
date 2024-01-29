@@ -1,5 +1,4 @@
 # ToDo - simple Django project with Bootstrap 5
-### Live: https://todo.v45.org/
 
 ##### Requirements: 
 ```
